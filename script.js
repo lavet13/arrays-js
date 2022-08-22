@@ -90,19 +90,34 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
-const createUsernames = function (user) {
-  let username = user
-    .toLowerCase()
-    .split(' ')
-    .map(name => name[0])
-    .join('');
-
-  return username;
+// each function should actually receive the data that it should work with, instead of using a global variable
+const createUsernames = function (accs) {
+  // there is a side effect, so in other words, to simply do some work without returning anything
+  accs.forEach(acc => {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
 };
 
-accounts.forEach(({ owner }) => {
-  console.log(createUsernames(owner));
-});
+createUsernames(accounts);
+
+const calcPrintBalance = function (movements) {
+  const balance = movements.reduce(
+    (acc, currentValue) => acc + currentValue,
+    0
+  );
+
+  // while (labelBalance.firstChild) {
+  //   labelBalance.removeChild(labelBalance.lastChild);
+  // }
+
+  labelBalance.textContent = balance;
+};
+
+calcPrintBalance(account1.movements);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -114,7 +129,7 @@ accounts.forEach(({ owner }) => {
 //   ['GBP', 'Pound sterling'],
 // ]);
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+let movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /*
 /////////////////////////////////////////////////
@@ -174,7 +189,6 @@ console.log('jonas'.at(-1));
 ///////////////////////////////////////////////////
 // Looping Arrays_ forEach
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // for (const move of movements) {
 for (const [i, move] of movements.entries()) {
@@ -221,8 +235,8 @@ class Counter {
     array.forEach(function (entry) {
       this.sum += entry;
       ++this.count;
-    }, objTest2); // SOLVE it works as expected
-    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this"(which is the object) to prevent the "this" keyword points to the undefined(in strict mode), but we are specifying on objTest2 to check certain situations with arrow function
+    }, this); // SOLVE it works as expected
+    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this"(which is the object) to prevent the "this" keyword points to the undefined(in strict mode)
   }
 }
 
@@ -272,11 +286,10 @@ currenciesUnique.forEach((currency, _, set) => {
 // The map Method
 // the map method is yet another way that we can use to loop over arrays, but unlike forEach method, the map method will give us a brand new array, and this new array will contain in each position the results of applying a callback function to the original array elements;
 
-let movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 const eurtoUsd = 1.1;
 
 // const movementsUSD = movements.map(function (euro) {
-//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - it it was function expression(in strict mode), - works the same as for function declaration
+//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - it it was function expression(in strict mode), but could still specified the window if we needed, just to simply set it to the "this" value
 //   Math.trunc(euro * eurtoUsd);
 // });
 
@@ -300,11 +313,87 @@ const objTest = {
 // in each iteration we printed each line individually to the console, as we were looping over the array, so in each iteration we perform some action that was then visible in the console and we can call this a side effect, so the forEach method creates a side effects
 // we didn't create a side effect in each of the iteration, all we did was to build a brand new array
 const movementsDesc = movements.map(function (mov, i) {
-  console.log(this);
+  console.log(this); // if we didn't specified the second argument, then it will be undefined(simple function call), unlike to set in the second argument to the "this" value, then it will be window object
   return `Movement ${
     i + 1
   }: You ${mov > 0 ? 'deposited' : 'withdrew'} ${Math.abs(mov)}`;
-}, objTest); // SOLVE works only with function expression, but not with arrow function
+}, this); // SOLVE works only with function expression, but not with arrow function for specifying certain value, arrows don't care
 
 console.log(movementsDesc);
 */
+
+/*
+/////////////////////////////////////////////////
+// The filter Method
+// https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/isFinite
+// https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite
+// Number.isFinite() - false => NaN, +Infinity, -Infinity, null, undefined, string('0123'), so it checks is a certain value is a number
+
+// https://stackoverflow.com/questions/19839952/all-falsey-values-in-javascript
+// falsey values => String, Number, Boolean, Null, Undefined, BigInt, Symbol, Object
+console.log(movements);
+
+// it's more practical application and that's because we can actually chain all the methods together, basically use them all one after another to build a big final result, which is completely impossible to do with the for loop, so this is a big advantage of using the methods instead of regular for loop
+// https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
+const deposits = movements.filter(function (mov) {
+  return mov > 0;
+});
+
+console.log(deposits);
+
+// regular for loop
+// const depositsFor = [];
+
+// for (const mov of movements) {
+//   if (mov > 0) {
+//     depositsFor.push(mov); // push saves order of the elements
+//   }
+// }
+
+// console.log(depositsFor);
+
+// small challenge
+const withdrawals = movements.filter(function (mov) {
+  return mov < 0;
+});
+
+console.log(withdrawals);
+
+// SOLVE it's not that important to explain second argument "thisArgs"
+*/
+
+/*
+/////////////////////////////////////////////////////////////////////
+// The reduce Method
+// it is by far the most powerful array method that there is, it can also be the hardest one to use
+// essentially boils down all the elements in an array to one single value
+
+console.log(`movements: ${movements.join(', ')}`);
+
+// accumulator -> SNOWBALL
+// accumulator will be the current sum of all the previous values and so we will really keep adding to this accumulator in each iteration of the loop
+// const balance = movements.reduce(function (acc, cur, i, arr) {
+//   console.log(`Iteration ${i}: ${acc}`);
+//   return acc + cur;
+// }, 0);
+
+const balance = movements.reduce((acc, mov, i, arr) => acc + mov, 0);
+
+console.log(balance);
+
+let balanceFor = 0;
+
+for (let [i, mov] of movements.entries()) {
+  // console.log(`Iteration ${i}: ${balanceFor}`);
+  balanceFor += mov;
+}
+
+console.log(balanceFor);
+
+// Maximum value of the movements array
+let maxValue = movements.reduce((acc, mov) => (acc > mov ? acc : mov));
+console.log(`Maximum value: ${maxValue}`);
+*/
+
+/////////////////////////////////////////////////////
+//
