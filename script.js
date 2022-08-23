@@ -88,10 +88,10 @@ const displayMovements = function (movements) {
   });
 };
 
-displayMovements(account1.movements);
-
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce(
+const calcDisplayBalance = function (acc) {
+  // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
+  // Object.defineProperty
+  acc.balance = acc.movements.reduce(
     (acc, currentValue) => acc + currentValue,
     0
   );
@@ -100,12 +100,10 @@ const calcDisplayBalance = function (movements) {
   //   labelBalance.removeChild(labelBalance.lastChild);
   // }
 
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${acc.balance} EUR`;
 };
 
-calcDisplayBalance(account1.movements);
-
-const calcDisplaySummary = function (movements) {
+const calcDisplaySummary = function ({ movements, interestRate }) {
   const incomes = movements
     .filter(mov => mov > 0)
     .reduce((deposit, mov) => deposit + mov);
@@ -120,17 +118,15 @@ const calcDisplaySummary = function (movements) {
 
   const interest = movements
     .filter(mov => mov > 0)
-    .map(deposit => (deposit * 1.2) / 100)
+    .map(deposit => (deposit * interestRate) / 100)
     .filter((int, i, arr) => {
-      console.log(arr);
       return int >= 1;
     })
-    .reduce((acc, int) => acc + int);
+    .reduce((acc, int) => acc + int)
+    .toFixed(2);
 
   labelSumInterest.textContent = `${interest} EUR`;
 };
-
-calcDisplaySummary(account1.movements);
 
 // each function should actually receive the data that it should work with, instead of using a global variable
 const createUsernames = function (accs) {
@@ -145,6 +141,109 @@ const createUsernames = function (accs) {
 };
 
 createUsernames(accounts);
+
+const clearFields = function (input1, input2) {
+  input1.value = input2.value = '';
+  input1.blur();
+  input2.blur();
+
+  // there is also focus method, which do opposite of the blur method
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event
+};
+
+const updateUI = function (acc) {
+  // Display movements
+  displayMovements(acc.movements);
+
+  // Display balance
+  calcDisplayBalance(acc);
+
+  // Display summary
+  calcDisplaySummary(acc);
+};
+
+let currentAccount;
+
+// Event Handler
+btnLogin.addEventListener('click', e => {
+  e.preventDefault();
+
+  currentAccount = accounts.find(
+    acc =>
+      acc.username === inputLoginUsername.value &&
+      acc.pin === +inputLoginPin.value
+  );
+
+  if (currentAccount) {
+    // Display UI and message
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }!`;
+    containerApp.style.opacity = 1;
+    containerApp.style.visibility = 'visible';
+
+    updateUI(currentAccount);
+    clearFields(inputLoginUsername, inputLoginPin);
+  }
+
+  console.log(currentAccount);
+});
+
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+
+  const amount = +inputTransferAmount.value;
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+
+  if (
+    receiverAcc &&
+    amount > 0 &&
+    amount <= currentAccount.balance &&
+    receiverAcc !== currentAccount
+  ) {
+    // Doing the transfer
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+
+    updateUI(currentAccount);
+    clearFields(inputTransferAmount, inputTransferTo);
+  } else {
+    console.log(
+      'not enough money to transfer or selftransfer attempt or even empty transferTo input'
+    );
+  }
+
+  console.log(amount, receiverAcc);
+});
+
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    +inputClosePin.value === currentAccount.pin
+  ) {
+    // delete account
+    accounts.splice(
+      accounts.findIndex(acc => acc === currentAccount),
+      1
+    );
+
+    // HIDE UI
+    containerApp.style.opacity = 0;
+    containerApp.style.visibility = 'hidden';
+
+    // clear fields
+    clearFields(inputCloseUsername, inputClosePin);
+
+    // reset welcome
+    labelWelcome.textContent = 'Log in to get started';
+  } else {
+    console.log('incorrect input');
+  }
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -422,6 +521,7 @@ let maxValue = movements.reduce((acc, mov) => (acc > mov ? acc : mov));
 console.log(`Maximum value: ${maxValue}`);
 */
 
+/*
 /////////////////////////////////////////////////////
 // The Magic of Chaining Methods
 
@@ -438,3 +538,35 @@ const totalDepositsInUSD = movements
   .reduce((acc, mov) => acc + mov, 0);
 
 console.log(totalDepositsInUSD);
+*/
+
+/*
+////////////////////////////////////////////////////////
+// The find Method
+// The findIndex Method close cousin of the find Method, and findIndex method works exact the same way as find but as the name says, findIndex returns the index of the found element and not the element itself
+
+console.log(movements);
+
+// find, findIndex, map, filter, forEach have second argument which is thisArgs to specify a certain value to the "this" keyword, unlike those, the reduce method has initialValue as a second argument, so basically without having a thisArgs to manually set the "this" keyword
+// returns first element in the array that satisfies the provided testing function
+const firstWithdrawal = movements.find(mov => mov < 0); // unlike the filter method, the find method will actually not return a new array, but it will only return the first element in the array that satisfies this condition, so basically in other words, the first element in the array for which certain operation becomes true
+console.log(firstWithdrawal);
+
+const account = accounts.find(({ username }) => {
+  return username === 'ss';
+});
+
+console.log(account);
+
+// regular for loop
+let accountFor;
+
+for (const acc of accounts) {
+  if (acc.username === 'js') {
+    accountFor = acc;
+    break;
+  }
+}
+
+console.log(accountFor);
+*/
