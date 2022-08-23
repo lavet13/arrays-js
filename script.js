@@ -62,7 +62,7 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 const displayMovements = function (movements) {
-  containerMovements.replaceChildren(); // removes existing children, also we could add elements if we do want that
+  containerMovements.replaceChildren(); // removes existing children, also we could add elements if we want that
 
   // while (containerMovements.firstChild) {
   //   containerMovements.removeChild(containerMovements.lastChild);
@@ -80,7 +80,7 @@ const displayMovements = function (movements) {
           <div class="movements__type movements__type--${type}">
             ${i + 1} ${type}
            </div>
-          <div class="movements__value">${move}</div>
+          <div class="movements__value">${move} EUR</div>
         </div>
     `;
 
@@ -89,6 +89,48 @@ const displayMovements = function (movements) {
 };
 
 displayMovements(account1.movements);
+
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce(
+    (acc, currentValue) => acc + currentValue,
+    0
+  );
+
+  // while (labelBalance.firstChild) {
+  //   labelBalance.removeChild(labelBalance.lastChild);
+  // }
+
+  labelBalance.textContent = `${balance} EUR`;
+};
+
+calcDisplayBalance(account1.movements);
+
+const calcDisplaySummary = function (movements) {
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((deposit, mov) => deposit + mov);
+
+  labelSumIn.textContent = `${incomes} EUR`;
+
+  const outcomes = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+
+  labelSumOut.textContent = `${Math.abs(outcomes)} EUR`;
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 1.2) / 100)
+    .filter((int, i, arr) => {
+      console.log(arr);
+      return int >= 1;
+    })
+    .reduce((acc, int) => acc + int);
+
+  labelSumInterest.textContent = `${interest} EUR`;
+};
+
+calcDisplaySummary(account1.movements);
 
 // each function should actually receive the data that it should work with, instead of using a global variable
 const createUsernames = function (accs) {
@@ -103,21 +145,6 @@ const createUsernames = function (accs) {
 };
 
 createUsernames(accounts);
-
-const calcPrintBalance = function (movements) {
-  const balance = movements.reduce(
-    (acc, currentValue) => acc + currentValue,
-    0
-  );
-
-  // while (labelBalance.firstChild) {
-  //   labelBalance.removeChild(labelBalance.lastChild);
-  // }
-
-  labelBalance.textContent = balance;
-};
-
-calcPrintBalance(account1.movements);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -140,7 +167,7 @@ let arr = ['a', 'b', 'c', 'd', 'e'];
 console.log(arr.slice(2));
 console.log(arr.slice(2, 4)); // 4 - 2 = 2, so length of the new resulting array
 console.log(arr.slice(-2));
-console.log(arr.slice(-1)); // returns an new array with the last(one) element
+console.log(arr.slice(-1)); // returns a new array with the last(one) element
 console.log(arr.slice(1, -2)); // from the first index to the second last index (not included)
 console.log(arr.slice()); // just a matter of personal preferences, the only time you really need to use slice method is when you want to chain multiple methods together
 console.log([...arr]); // analogy
@@ -229,14 +256,14 @@ class Counter {
     // array.forEach(entry => {
     //   this.sum += entry;
     //   ++this.count;
-    // }, objTest2); // doesn't work it's override that second argument as if we didn't even specify that
-    // SOLVE it doesn't need thisArgs if it's arrow function(because if it passed an argument no matter what you pass into the second argument, it still will point to outer lexical scope in our case it's parent's function scope which is the object and we already know why is that), so if it's function expression and we know that "add" function is the method, and we already know that the "this" keyword is set to the object, because it's calling that method(add method)
+    // }, objTest2); // doesn't work it's override that second argument as if we didn't even specify that(arrow function)
+    // SOLVE it doesn't need thisArgs if it's arrow function(because if we were passed an argument no matter what you were passing into the second argument, it still will point to outer lexical scope in our case it's parent's function scope which is the object and we already know why is that)
 
     array.forEach(function (entry) {
       this.sum += entry;
       ++this.count;
     }, this); // SOLVE it works as expected
-    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this"(which is the object) to prevent the "this" keyword points to the undefined(in strict mode)
+    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this"(which is the object, outer scope of function expression) to prevent the "this" keyword points to the undefined(in strict mode)
   }
 }
 
@@ -289,7 +316,7 @@ currenciesUnique.forEach((currency, _, set) => {
 const eurtoUsd = 1.1;
 
 // const movementsUSD = movements.map(function (euro) {
-//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - it it was function expression(in strict mode), but could still specified the window if we needed, just to simply set it to the "this" value
+//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - in our case function expression(in strict mode), but could still specified the window object manually to the second argument of map method if we needed, specifying exactly the "this" VALUE
 //   Math.trunc(euro * eurtoUsd);
 // });
 
@@ -313,11 +340,11 @@ const objTest = {
 // in each iteration we printed each line individually to the console, as we were looping over the array, so in each iteration we perform some action that was then visible in the console and we can call this a side effect, so the forEach method creates a side effects
 // we didn't create a side effect in each of the iteration, all we did was to build a brand new array
 const movementsDesc = movements.map(function (mov, i) {
-  console.log(this); // if we didn't specified the second argument, then it will be undefined(simple function call), unlike to set in the second argument to the "this" value, then it will be window object
+  console.log(this); // window object
   return `Movement ${
     i + 1
   }: You ${mov > 0 ? 'deposited' : 'withdrew'} ${Math.abs(mov)}`;
-}, this); // SOLVE works only with function expression, but not with arrow function for specifying certain value, arrows don't care
+}, this); // SOLVE if we didn't specified the second argument, then it will be undefined(simple function call), unlike to set in the second argument to the "this" VALUE, then it will be window object
 
 console.log(movementsDesc);
 */
@@ -396,4 +423,18 @@ console.log(`Maximum value: ${maxValue}`);
 */
 
 /////////////////////////////////////////////////////
-//
+// The Magic of Chaining Methods
+
+const eurtoUsd = 1.1;
+console.log(movements);
+
+// PIPELINE
+const totalDepositsInUSD = movements
+  .filter(mov => mov > 0)
+  .map((mov, i, arr) => {
+    // console.log(arr);
+    return mov * eurtoUsd;
+  })
+  .reduce((acc, mov) => acc + mov, 0);
+
+console.log(totalDepositsInUSD);
