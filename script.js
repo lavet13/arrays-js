@@ -61,7 +61,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.replaceChildren(); // removes existing children, also we could add elements if we want that
 
   // while (containerMovements.firstChild) {
@@ -70,7 +70,10 @@ const displayMovements = function (movements) {
 
   // containerMovements.textContent = ''; // .textContent is more efficient than .innerText and .innerHTML
 
-  movements.forEach((move, i) => {
+  // sort
+  const movs = sort ? [...movements].sort((a, b) => a - b) : movements; // SOLVE ascending because, it will be reversed by the end, so basically we were inserting all the elements at the start of the container, that's why
+
+  movs.forEach((move, i) => {
     // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript?noredirect=1&lq=1
     // https://stackoverflow.com/questions/4991098/replacing-all-children-of-an-htmlelement
     const type = move > 0 ? `deposit` : `withdrawal`;
@@ -84,17 +87,14 @@ const displayMovements = function (movements) {
         </div>
     `;
 
-    containerMovements.insertAdjacentHTML('afterbegin', html);
+    containerMovements.insertAdjacentHTML('afterbegin', html); // SOLVE the afterbegin(unshift) keyword reverses the order, in case im not familiar, so to save the order we might use the beforeend(push) keyword in the first argument
   });
 };
 
 const calcDisplayBalance = function (acc) {
   // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
   // Object.defineProperty
-  acc.balance = acc.movements.reduce(
-    (acc, currentValue) => acc + currentValue,
-    0
-  );
+  acc.balance = acc.movements.reduce((acc, currentValue) => acc + currentValue);
 
   // while (labelBalance.firstChild) {
   //   labelBalance.removeChild(labelBalance.lastChild);
@@ -106,7 +106,7 @@ const calcDisplayBalance = function (acc) {
 const calcDisplaySummary = function ({ movements, interestRate }) {
   const incomes = movements
     .filter(mov => mov > 0)
-    .reduce((deposit, mov) => deposit + mov);
+    .reduce((deposit, mov) => deposit + mov, 0);
 
   labelSumIn.textContent = `${incomes} EUR`;
 
@@ -122,7 +122,7 @@ const calcDisplaySummary = function ({ movements, interestRate }) {
     .filter((int, i, arr) => {
       return int >= 1;
     })
-    .reduce((acc, int) => acc + int)
+    .reduce((acc, int) => acc + int, 0)
     .toFixed(2);
 
   labelSumInterest.textContent = `${interest} EUR`;
@@ -143,9 +143,16 @@ const createUsernames = function (accs) {
 createUsernames(accounts);
 
 const clearFields = function (input1, input2) {
-  input1.value = input2.value = '';
-  input1.blur();
-  input2.blur();
+  if (input1) {
+    input1.value = '';
+  }
+
+  if (input2) {
+    input2.value = '';
+  }
+
+  input1?.blur();
+  input2?.blur();
 
   // there is also focus method, which do opposite of the blur method
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event
@@ -168,13 +175,18 @@ let currentAccount;
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
 
-  currentAccount = accounts.find(
-    acc =>
-      acc.username === inputLoginUsername.value &&
-      acc.pin === +inputLoginPin.value
-  );
+  let account;
 
-  if (currentAccount) {
+  if (
+    (account = accounts.find(
+      acc =>
+        acc.username === inputLoginUsername.value &&
+        acc.pin === +inputLoginPin.value
+    ))
+  ) {
+    sorted = false;
+    currentAccount = account;
+
     // Display UI and message
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(' ')[0]
@@ -186,7 +198,7 @@ btnLogin.addEventListener('click', e => {
     clearFields(inputLoginUsername, inputLoginPin);
   }
 
-  console.log(currentAccount);
+  console.log(account);
 });
 
 btnTransfer.addEventListener('click', e => {
@@ -211,11 +223,30 @@ btnTransfer.addEventListener('click', e => {
     clearFields(inputTransferAmount, inputTransferTo);
   } else {
     console.log(
-      'not enough money to transfer or selftransfer attempt or even empty transferTo input'
+      'not enough money to transfer or selftransfer attempt or transferTo input is incorrect or empty'
     );
   }
 
   console.log(amount, receiverAcc);
+});
+
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+  const amount = +inputLoanAmount.value;
+
+  // at least one of the elements in the movements array has this condition
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    // add movement
+    currentAccount.movements.push(amount);
+
+    // Update UI
+    updateUI(currentAccount);
+    clearFields(inputLoanAmount);
+  } else {
+    console.log(
+      'amount is below zero or there is no deposit that is greater than 10% of requested amount'
+    );
+  }
 });
 
 btnClose.addEventListener('click', e => {
@@ -243,6 +274,14 @@ btnClose.addEventListener('click', e => {
   } else {
     console.log('incorrect input');
   }
+});
+
+let sorted = false;
+
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+
+  displayMovements(currentAccount.movements, (sorted = !sorted));
 });
 
 /////////////////////////////////////////////////
@@ -548,8 +587,9 @@ console.log(totalDepositsInUSD);
 console.log(movements);
 
 // find, findIndex, map, filter, forEach have second argument which is thisArgs to specify a certain value to the "this" keyword, unlike those, the reduce method has initialValue as a second argument, so basically without having a thisArgs to manually set the "this" keyword
-// returns first element in the array that satisfies the provided testing function
+
 const firstWithdrawal = movements.find(mov => mov < 0); // unlike the filter method, the find method will actually not return a new array, but it will only return the first element in the array that satisfies this condition, so basically in other words, the first element in the array for which certain operation becomes true
+
 console.log(firstWithdrawal);
 
 const account = accounts.find(({ username }) => {
@@ -570,3 +610,180 @@ for (const acc of accounts) {
 
 console.log(accountFor);
 */
+
+/*
+/////////////////////////////////////////////////////////////
+// some and every methods
+console.log(movements);
+
+// EQUALITY
+console.log(movements.includes(-130)); // true
+
+// we could rewrite above like this
+console.log(movements.some(mov => mov === -130));
+
+// SOME: CONDITION
+const anyDeposits = movements.some(mov => mov > 0);
+console.log(anyDeposits);
+
+// EVERY: CONDITION
+// it returns true if only all the elements in the array satisfy the condition that we pass in, in other words if every element passes the test in our callback function only then the every method returns true and that's why the method is called every
+console.log(account4.movements.every(mov => mov > 0)); // we essentially check if all of our movements are deposits
+
+// Separate callback
+const deposit = mov => mov > 0;
+console.log(movements.some(deposit));
+console.log(movements.filter(deposit));
+console.log(movements.every(deposit));
+*/
+
+/*
+////////////////////////////////////////////////////////////////
+// flat and flatMap (were introduced in ES2019, they are pretty recent)
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+console.log(arr.flat()); // depth, default is 1
+
+const arrDeep = [
+  [1, [2, 3]],
+  [4, [5, 6]],
+  [7, 8],
+];
+
+console.log(arrDeep.flat(2));
+
+// const accountMovements = accounts.map(({ movements }) => movements);
+// const allMovements = accountMovements.flat();
+// console.log(`all movements: ${allMovements.join(', ')};`);
+// const overallBalance = allMovements.reduce((acc, mov) => acc + mov);
+// console.log(`overAllBalance: ${overallBalance}`);
+
+// flat
+const overallBalance = accounts
+  .map(({ movements }) => movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov);
+
+console.log(`overAllBalance: ${overallBalance}`);
+
+// it's better for performance to use flatMap instead of using map and flat separately
+// flatMap, but it goes only one level deep, so if we do need to go deeper than just one level, we still need to use the flat method
+const overallBalance2 = accounts
+  .flatMap(({ movements }) => movements) // essentially a map method, but it does flattens the result at the end
+  .reduce((acc, mov) => acc + mov);
+
+console.log(`overAllBalance2: ${overallBalance2}`);
+*/
+
+/*
+/////////////////////////////////////////////////////
+// Sorting Arrays
+
+// Strings
+const owners = ['Jonas', 'Zach', 'Adam', 'Martha'];
+console.log(owners.sort()); // mutate the original array
+console.log(owners);
+
+// Numbers
+console.log(movements);
+// console.log(movements.sort()); // the sort method does the sorting based on strings, so that might sound weird, but that's just how it works by default
+// so basically what it does is to convert everything to strings and then it does the sorting itself and the result is as if they were strings then the result actually makes sense, and in fact we can fix this by passing in a compare callback function into the sort method
+
+// return < 0, compareFunction(a, b) - A, B (keep order)
+// return > 0, compareFunction(a, b) - B, A (switch order)
+// return = 0, compareFunction(a, b) - A, B (keep original order)
+
+// Ascending
+// movements.sort((a, b) => {
+//   if (a > b) {
+//     // B, A (switch order)
+//     return 1; // number here doesn't really matter, at least it needs to be greater than zero
+//   }
+//   if (a < b) {
+//     // A, B (keep order)
+//     return -1; // it needs to be less than zero
+//   }
+// });
+
+// similar as above
+// movements.sort((a, b) => a - b);
+console.log(movements);
+
+// Descending
+movements.sort((a, b) => {
+  if (a > b) {
+    // A, B (keep order)
+    return -1; // number here doesn't really matter, at least it needs to be less than zero
+  }
+  if (a < b) {
+    // B, A (switch order)
+    return 1; // it needs to be greater than zero
+  }
+});
+
+// same as above
+movements.sort((a, b) => b - a);
+console.log(movements);
+*/
+
+//////////////////////////////////////////////
+// More Ways of Creating and Filling Arrays
+// https://developer.mozilla.org/ru/docs/Web/JavaScript/Typed_arrays
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
+
+console.log(new Array(1, 2, 3, 4, 5, 6, 7)); // passing numbers to the rest array basically
+console.log(new Array(10)); // by passing only one value we would get the array with the length and simply get the empty elements, basically in there it contains nothing
+
+// Empty array + fill method(map doesn't workout with empty values) = we created an array programmatically, so without actually having to write it down manually
+const x = new Array(10); // 10 empty values, so essentially 10 is the length of the array that we specified in the constructor
+x.fill(1, 1, 4); // first argument is the value that the array is gonna be filled, and second argument is where we want it to start to fill and third argument is the end of the fill(this.length), and just like in slice method the final index is not gonna be included in the array
+console.log(x);
+
+const arr = [1, 2, 3, 4, 5, 6, 7];
+console.log(arr.fill(23, 2, 6)); // SOLVE MUTATE original array and returns one, and it reminds me splice and slice at the same time
+
+// way better approach to fill array with one specific value
+console.log(Array.from({ length: 7 })); // unlike new Array(7) which is gonna contain 7 empty values, this one will be contain 7 undefined values, so that it will take us to the point where we could use mapping function
+const y = Array.from({ length: 7 }, () => 1); // we are not using the from as a method on an array, instead we are using it on the Array() constructor, so this is function object on which we call the from() method; first argument is the object and in it we can specify the length property and second argument is the mapping function, so it is exactly like the callback function that we pass into the map() method
+console.log(y);
+
+const z = Array.from({ length: 7 }, (_, i) => i + 1); // callback function is exactly like the one in a map() method
+console.log(z);
+
+// keys are indexes, so if it does not maintain that then it will simply be undefined
+const textObj = {
+  0: 'Ivan',
+  1: 'Pavel',
+  2: 'Sasha',
+  3: 'Nikita',
+  length: 4,
+};
+
+console.log(Array.from(textObj));
+
+const f = function () {
+  console.log(arguments); // [[Prototype]]: Object
+  return Array.from(arguments);
+};
+
+console.log(f(1, 2, 3, 4, 5)); // [[Prototype]]: Array(0)
+
+// 100 random dice rolls
+console.log(
+  Array.from({ length: 100 }, () => Math.trunc(Math.random() * 6) + 1)
+);
+
+// getting data from UI
+labelBalance.addEventListener('click', function () {
+  // const movementsUI = Array.from(
+  //   document.querySelectorAll('.movements__value'),
+  //   node => +node.textContent.replace('EUR', '')
+  // );
+
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value'),
+    node => parseInt(node.textContent)
+  );
+
+  console.log(movementsUI);
+});
