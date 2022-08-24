@@ -314,7 +314,7 @@ console.log([...arr]); // analogy
 // console.log(arr.splice(2)); // starting from the second index until the end extract elements from the original array, it returns an array with deleted elements, so it deletes elements from the original array
 arr.splice(-1); // last element from an original array will be deleted, and it returns array with only one value, and still would modified original array
 console.log(arr);
-console.log(arr.splice(1, 2)); // second argument is deleteCount, first is starting index;
+console.log(arr.splice(1, 2)); // second argument is deleteCount, first is starting index, if no elements are removed, an empty array is returned
 console.log(arr);
 
 // REVERSE
@@ -342,7 +342,7 @@ console.log(arr.at(0));
 
 // getting the last array element
 console.log(arr[arr.length - 1]);
-console.log(arr.slice(-1)[0]); // slice returns new array with only one value(last value), so we just get that one out of the array, doesn't mutate the original array
+console.log(arr.slice(-1)[0]); // slice returns new array with only one value(last value), so we just get that one out of the array, doesn't mutate the original one
 console.log(arr.at(-1)); // at method is perfect for method chaining
 
 // also works for strings
@@ -401,7 +401,7 @@ class Counter {
       this.sum += entry;
       ++this.count;
     }, this); // SOLVE it works as expected
-    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this"(which is the object, outer scope of function expression) to prevent the "this" keyword points to the undefined(in strict mode)
+    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this" value(which is the object, outer scope of function expression is the method that is called by object) to prevent the "this" keyword points to the undefined(in strict mode)
   }
 }
 
@@ -454,8 +454,8 @@ currenciesUnique.forEach((currency, _, set) => {
 const eurtoUsd = 1.1;
 
 // const movementsUSD = movements.map(function (euro) {
-//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - in our case function expression(in strict mode), but could still specified the window object manually to the second argument of map method if we needed, specifying exactly the "this" VALUE
-//   Math.trunc(euro * eurtoUsd);
+//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - in our case function expression(in strict mode), but could still specified the window object manually to the second argument of map method if we needed, specifying exactly the "this" VALUE which will be the outer scope
+//   return Math.trunc(euro * eurtoUsd);
 // });
 
 const movementsUSD = movements.map(euro => Math.trunc(euro * eurtoUsd));
@@ -482,7 +482,7 @@ const movementsDesc = movements.map(function (mov, i) {
   return `Movement ${
     i + 1
   }: You ${mov > 0 ? 'deposited' : 'withdrew'} ${Math.abs(mov)}`;
-}, this); // SOLVE if we didn't specified the second argument, then it will be undefined(simple function call), unlike to set in the second argument to the "this" VALUE, then it will be window object
+}, this); // SOLVE if we didn't specified the second argument, then it will be undefined(simple function call), unlike to set in the second argument to the "this" VALUE, which will gonna be the window object
 
 console.log(movementsDesc);
 */
@@ -586,7 +586,7 @@ console.log(totalDepositsInUSD);
 
 console.log(movements);
 
-// find, findIndex, map, filter, forEach have second argument which is thisArgs to specify a certain value to the "this" keyword, unlike those, the reduce method has initialValue as a second argument, so basically without having a thisArgs to manually set the "this" keyword
+// find, findIndex, map, filter, forEach and also Array.from(arrayLike, mapping function, thisArgs) have second argument which is thisArgs to specify a certain value to the "this" keyword, unlike those, the reduce method has initialValue as a second argument, so basically without having a thisArgs to manually set the "this" keyword
 
 const firstWithdrawal = movements.find(mov => mov < 0); // unlike the filter method, the find method will actually not return a new array, but it will only return the first element in the array that satisfies this condition, so basically in other words, the first element in the array for which certain operation becomes true
 
