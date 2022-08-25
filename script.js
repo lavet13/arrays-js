@@ -725,6 +725,7 @@ movements.sort((a, b) => b - a); // Descending
 console.log(movements);
 */
 
+/*
 //////////////////////////////////////////////
 // More Ways of Creating and Filling Arrays
 // https://developer.mozilla.org/ru/docs/Web/JavaScript/Typed_arrays
@@ -763,6 +764,10 @@ console.log(Array.from(textObj));
 
 const f = function () {
   console.log(arguments); // [[Prototype]]: Object
+  for (let arg of arguments) {
+    // iterable
+    console.log(arg);
+  }
   return Array.from(arguments); // arguments keyword is an iterable
 };
 
@@ -770,7 +775,10 @@ console.log(f(1, 2, 3, 4, 5)); // [[Prototype]]: Array(0)
 
 // 100 random dice rolls
 console.log(
-  Array.from({ length: 100 }, () => Math.trunc(Math.random() * 6) + 1) // 1 .. 6
+  Array.from(
+    { length: 100 },
+    (element, i, _) => Math.trunc(Math.random() * 6) + 1 // third argument is undefined, because processed array wasn't provided by mapping function(callback function)
+  ) // 1 .. 6
 );
 
 // getting data from UI
@@ -782,7 +790,7 @@ labelBalance.addEventListener('click', function () {
 
   const movementsUI = Array.from(
     document.querySelectorAll('.movements__value'),
-    node => parseInt(node.textContent)
+    node => parseInt(node.textContent) // SOLVE in mapping function we don't have access to the processed array, so the third argument in the callback function will be undefined
   );
 
   console.log(movementsUI);
@@ -791,14 +799,87 @@ labelBalance.addEventListener('click', function () {
 // subtle difference
 console.log(
   Array.from([1, 2, 3], (_, __, arr) => {
-    console.log(`intermediate: ${arr}`);
+    // there is no arr in there just an undefined
+    console.log(`intermediate: ${arr}`); // intermediate: undefined
     return 0;
   })
 );
 
 console.log(
   Array.from([1, 2, 3]).map((_, __, arr) => {
-    console.log(`intermediate: ${arr}`);
+    // there were separated, that's why it's not undefined
+    console.log(`intermediate: ${arr}`); // intermediate: 1,2,3
     return 0;
   })
 );
+*/
+
+/*
+////////////////////////////////////////////////////////////////////////////////
+// Summary Which Array Method to Use
+
+// To mutate original array
+    // Add to original:
+    .push(); // (end)
+    .unshift(); // (start)
+
+    // Remove from original: 
+    .pop(); // (end)
+    .shift(); // (start)
+    .splice(); // (any)
+
+    // Others:
+    .reverse();
+    .sort();
+    .fill();
+
+// A new array
+    // Computed from original:
+    .map(); // (loop)
+
+    // Filtered using condition:
+    .filter();
+
+    // Portion of original:
+    .slice();
+
+    // Adding original to other:
+    .concat();
+
+    //Flatteing the original:
+    .flat();
+    .flatMap();
+
+// An array index
+    // Based on value:
+    .indexOf();
+
+    // Based on test condition:
+    .findIndex();
+
+// An array element
+    // Based on test condition:
+    .find();
+
+// Know if array includes
+    // Based on value:
+    .includes();
+
+    // Based on test condition:
+    .some();
+    .every();
+
+// A new string
+    // Based on separator string:
+    .join();
+
+// To transform to value
+    // Based on accumulator:
+    .reduce();
+    // (Boil down array to single value of any type: number, string, boolean, or even new array or object)
+
+// To just loop array
+    // Based on callback:
+    .forEach();
+    // (Does not create a new array, just loops over it)
+*/
