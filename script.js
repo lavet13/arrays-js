@@ -401,7 +401,7 @@ class Counter {
       this.sum += entry;
       ++this.count;
     }, this); // SOLVE it works as expected
-    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this" value(which is the object, outer scope of function expression is the method that is called by object) to prevent the "this" keyword points to the undefined(in strict mode)
+    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this" VALUE(which is the object, the outer scope of function expression that is the method that is called by object) to prevent the "this" keyword points to the undefined(in strict mode)
   }
 }
 
@@ -454,7 +454,7 @@ currenciesUnique.forEach((currency, _, set) => {
 const eurtoUsd = 1.1;
 
 // const movementsUSD = movements.map(function (euro) {
-//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - in our case function expression(in strict mode), but could still specified the window object manually to the second argument of map method if we needed, specifying exactly the "this" VALUE which will be the outer scope
+//   console.log(this); // SOLVE window object, if it was an arrow function, or undefined - in our case function expression(in strict mode), but we could still specified the window object manually to the second argument of map method if we need to, specifying exactly the "this" VALUE which will be the outer scope
 //   return Math.trunc(euro * eurtoUsd);
 // });
 
@@ -492,7 +492,7 @@ console.log(movementsDesc);
 // The filter Method
 // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/isFinite
 // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite
-// Number.isFinite() - false => NaN, +Infinity, -Infinity, null, undefined, string('0123'), so it checks is a certain value is a number
+// Number.isFinite() - false => NaN, +Infinity, -Infinity, null, undefined, string('0123'), so it checks if a certain value is a number
 
 // https://stackoverflow.com/questions/19839952/all-falsey-values-in-javascript
 // falsey values => String, Number, Boolean, Null, Undefined, BigInt, Symbol, Object
@@ -627,7 +627,7 @@ const anyDeposits = movements.some(mov => mov > 0);
 console.log(anyDeposits);
 
 // EVERY: CONDITION
-// it returns true if only all the elements in the array satisfy the condition that we pass in, in other words if every element passes the test in our callback function only then the every method returns true and that's why the method is called every
+// it returns true if only all the elements in the array satisfy the condition that we pass in, in other words if every element passes the test in our callback function only then the "every" method returns true and that's why the method is called "every"
 console.log(account4.movements.every(mov => mov > 0)); // we essentially check if all of our movements are deposits
 
 // Separate callback
