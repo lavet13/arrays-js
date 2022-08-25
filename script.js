@@ -853,6 +853,7 @@ console.log(
 // An array index
     // Based on value:
     .indexOf();
+    .lastIndexOf();
 
     // Based on test condition:
     .findIndex();
@@ -864,6 +865,8 @@ console.log(
 // Know if array includes
     // Based on value:
     .includes();
+    .startsWith();
+    .endsWith();
 
     // Based on test condition:
     .some();
@@ -871,6 +874,7 @@ console.log(
 
 // A new string
     // Based on separator string:
+    .split();
     .join();
 
 // To transform to value
@@ -883,3 +887,68 @@ console.log(
     .forEach();
     // (Does not create a new array, just loops over it)
 */
+
+//////////////////////////////////////////////////
+// Array Methods Practice
+
+// 1.
+const bankDepositSum = accounts
+  .flatMap(({ movements }) => movements)
+  .filter(mov => mov > 0)
+  .reduce((acc, mov) => acc + mov, 0);
+
+console.log(bankDepositSum);
+
+// 2.
+const numDeposits = accounts
+  .flatMap(({ movements }) => movements)
+  .reduce((acc, cur) => (cur >= 1000 ? ++acc : acc), 0);
+
+const numDeposits2 = accounts
+  .flatMap(({ movements }) => movements)
+  .filter(mov => mov >= 1000).length;
+
+console.log(numDeposits);
+console.log(numDeposits2);
+
+// Prefixed ++ operator
+let a = 10;
+console.log(++a);
+console.log(a);
+
+// 3.
+const sums = accounts
+  .flatMap(({ movements }) => movements)
+  .reduce(
+    (acc, cur) => {
+      // cur > 0 ? (acc.deposits += cur) : (acc.withdrawals += cur);
+      acc[cur > 0 ? 'deposits' : 'withdrawals'] += cur;
+      return acc;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+
+console.log(sums);
+
+// recreate any of examples that we did previously in the section with map filter and reduce to use only the reduce method
+
+// 4.
+const convertTitleCase = function (title) {
+  const capitalize = str => str.replace(str[0], str[0].toUpperCase());
+
+  const exceptions = ['a', 'an', 'and', 'the', 'but', 'or', 'on', 'in', 'with'];
+
+  const titleCase = title
+    .toLowerCase()
+    .trim()
+    .split(' ')
+    .map(word => (!exceptions.includes(word) ? capitalize(word) : word))
+    .join(' ');
+
+  return capitalize(titleCase);
+  // return titleCase[0].toUpperCase() + titleCase.slice(1);
+};
+
+console.log(convertTitleCase('this is a nice title'));
+console.log(convertTitleCase('this is a LONG title but not too long'));
+console.log(convertTitleCase('and here is another title with an EXAMPLE'));
