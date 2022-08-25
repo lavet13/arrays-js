@@ -696,32 +696,32 @@ console.log(movements);
 // movements.sort((a, b) => {
 //   if (a > b) {
 //     // B, A (switch order)
-//     return 1; // number here doesn't really matter, at least it needs to be greater than zero
+//     return 1; 
 //   }
 //   if (a < b) {
 //     // A, B (keep order)
-//     return -1; // it needs to be less than zero
+//     return -1; 
 //   }
 // });
 
 // similar as above
-// movements.sort((a, b) => a - b);
+// movements.sort((a, b) => a - b); // Ascending
 console.log(movements);
 
 // Descending
 movements.sort((a, b) => {
   if (a > b) {
     // A, B (keep order)
-    return -1; // number here doesn't really matter, at least it needs to be less than zero
+    return -1; 
   }
   if (a < b) {
     // B, A (switch order)
-    return 1; // it needs to be greater than zero
+    return 1; 
   }
 });
 
 // same as above
-movements.sort((a, b) => b - a);
+movements.sort((a, b) => b - a); // Descending
 console.log(movements);
 */
 
@@ -736,7 +736,7 @@ console.log(new Array(10)); // by passing only one value we would get the array 
 
 // Empty array + fill method(map doesn't workout with empty values) = we created an array programmatically, so without actually having to write it down manually
 const x = new Array(10); // 10 empty values, so essentially 10 is the length of the array that we specified in the constructor
-x.fill(1, 1, 4); // first argument is the value that the array is gonna be filled, and second argument is where we want it to start to fill and third argument is the end of the fill(this.length), and just like in slice method the final index is not gonna be included in the array
+x.fill(1, 1, 4); // first argument is the value that the array is gonna be filled, and second argument is where we want it to start to fill and third argument is the end of the fill(arr.length), and just like in slice method the final index is not gonna be included in the array
 console.log(x);
 
 const arr = [1, 2, 3, 4, 5, 6, 7];
@@ -744,7 +744,7 @@ console.log(arr.fill(23, 2, 6)); // SOLVE MUTATE original array and returns one,
 
 // way better approach to fill array with one specific value
 console.log(Array.from({ length: 7 })); // unlike new Array(7) which is gonna contain 7 empty values, this one will be contain 7 undefined values, so that it will take us to the point where we could use mapping function
-const y = Array.from({ length: 7 }, () => 1); // we are not using the from as a method on an array, instead we are using it on the Array() constructor, so this is function object on which we call the from() method; first argument is the object and in it we can specify the length property and second argument is the mapping function, so it is exactly like the callback function that we pass into the map() method
+const y = Array.from({ length: 7 }, () => 1); // we are not using the from as a method on an array, instead we are using it on the Array() constructor, so this is function object on which we call the from() method; first argument is arrayLike object and second argument is the mapping function, so it is exactly like the callback function that we pass into the map() method
 console.log(y);
 
 const z = Array.from({ length: 7 }, (_, i) => i + 1); // callback function is exactly like the one in a map() method
@@ -763,14 +763,14 @@ console.log(Array.from(textObj));
 
 const f = function () {
   console.log(arguments); // [[Prototype]]: Object
-  return Array.from(arguments);
+  return Array.from(arguments); // arguments keyword is an iterable
 };
 
 console.log(f(1, 2, 3, 4, 5)); // [[Prototype]]: Array(0)
 
 // 100 random dice rolls
 console.log(
-  Array.from({ length: 100 }, () => Math.trunc(Math.random() * 6) + 1)
+  Array.from({ length: 100 }, () => Math.trunc(Math.random() * 6) + 1) // 1 .. 6
 );
 
 // getting data from UI
@@ -787,3 +787,18 @@ labelBalance.addEventListener('click', function () {
 
   console.log(movementsUI);
 });
+
+// subtle difference
+console.log(
+  Array.from([1, 2, 3], (_, __, arr) => {
+    console.log(`intermediate: ${arr}`);
+    return 0;
+  })
+);
+
+console.log(
+  Array.from([1, 2, 3]).map((_, __, arr) => {
+    console.log(`intermediate: ${arr}`);
+    return 0;
+  })
+);
