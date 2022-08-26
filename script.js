@@ -623,6 +623,7 @@ console.log(movements.includes(-130)); // true
 console.log(movements.some(mov => mov === -130));
 
 // SOME: CONDITION
+// it returns true if, in the array, it finds an element for which the provided function returns true; otherwise it returns false. it doesn't modify the array.
 const anyDeposits = movements.some(mov => mov > 0);
 console.log(anyDeposits);
 
@@ -737,7 +738,7 @@ console.log(new Array(10)); // by passing only one value we would get the array 
 
 // Empty array + fill method(map doesn't workout with empty values) = we created an array programmatically, so without actually having to write it down manually
 const x = new Array(10); // 10 empty values, so essentially 10 is the length of the array that we specified in the constructor
-x.fill(1, 1, 4); // first argument is the value that the array is gonna be filled, and second argument is where we want it to start to fill and third argument is the end of the fill(arr.length), and just like in slice method the final index is not gonna be included in the array
+x.fill(1, 1, 4); // first argument is the value that the array is gonna be filled, second and third arguments behave exactly like a slice method
 console.log(x);
 
 const arr = [1, 2, 3, 4, 5, 6, 7];
@@ -752,15 +753,15 @@ const z = Array.from({ length: 7 }, (_, i) => i + 1); // callback function is ex
 console.log(z);
 
 // keys are indexes, so if it does not maintain that then it will simply be undefined
-const textObj = {
+const testObj = {
   0: 'Ivan',
   1: 'Pavel',
   2: 'Sasha',
   3: 'Nikita',
-  length: 4,
+  length: 4, // important part
 };
 
-console.log(Array.from(textObj));
+console.log(Array.from(testObj));
 
 const f = function () {
   console.log(arguments); // [[Prototype]]: Object
@@ -790,7 +791,7 @@ labelBalance.addEventListener('click', function () {
 
   const movementsUI = Array.from(
     document.querySelectorAll('.movements__value'),
-    node => parseInt(node.textContent) // SOLVE in mapping function we don't have access to the processed array, so the third argument in the callback function will be undefined
+    node => parseInt(node.textContent) // SOLVE in mapping function we don't have access to the processed array, so the third argument in the callback function will be undefined(trying to get access to "document.querySelectorAll('.movements__value')")
   );
 
   console.log(movementsUI);
@@ -799,7 +800,7 @@ labelBalance.addEventListener('click', function () {
 // subtle difference
 console.log(
   Array.from([1, 2, 3], (_, __, arr) => {
-    // there is no arr in there just an undefined
+    // there is no arr in there, just an undefined
     console.log(`intermediate: ${arr}`); // intermediate: undefined
     return 0;
   })
