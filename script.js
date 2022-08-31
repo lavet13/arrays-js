@@ -791,7 +791,7 @@ labelBalance.addEventListener('click', function () {
 
   const movementsUI = Array.from(
     document.querySelectorAll('.movements__value'),
-    node => parseInt(node.textContent) // SOLVE in mapping function we don't have access to the processed array, so the third argument in the callback function will be undefined(trying to get access to "document.querySelectorAll('.movements__value')")
+    node => parseInt(node.textContent) // SOLVE in mapping function we don't have access to the processed array, so the third argument in the callback function will be undefined(have been tried to get access to "document.querySelectorAll('.movements__value')")
   );
 
   console.log(movementsUI);
@@ -887,6 +887,7 @@ console.log(
     // Based on callback:
     .forEach();
     // (Does not create a new array, just loops over it)
+
 */
 
 //////////////////////////////////////////////////
