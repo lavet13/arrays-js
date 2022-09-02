@@ -315,6 +315,7 @@ console.log([...arr]); // analogy
 arr.splice(-1); // last element from an original array will be deleted, and it returns array with only one value, and still would modified original array
 console.log(arr);
 console.log(arr.splice(1, 2)); // second argument is deleteCount, first is starting index, if no elements are removed, an empty array is returned
+console.log(arr.splice(0)); // then the entire original array will be cleaned, and splice method will return all the deleted elements from the original one
 console.log(arr);
 
 // REVERSE
@@ -791,7 +792,7 @@ labelBalance.addEventListener('click', function () {
 
   const movementsUI = Array.from(
     document.querySelectorAll('.movements__value'),
-    node => parseInt(node.textContent) // SOLVE in mapping function we don't have access to the processed array, so the third argument in the callback function will be undefined(have been tried to get access to "document.querySelectorAll('.movements__value')")
+    node => parseInt(node.textContent) // SOLVE in mapping function we don't have access to the processed array, so the third argument in the callback function will be undefined(had been tried to get access to "document.querySelectorAll('.movements__value')")
   );
 
   console.log(movementsUI);
