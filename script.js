@@ -68,7 +68,7 @@ const displayMovements = function (movements, sort = false) {
   //   containerMovements.removeChild(containerMovements.lastChild);
   // }
 
-  // containerMovements.textContent = ''; // .textContent is more efficient than .innerText and .innerHTML
+  // containerMovements.textContent = ''; // .textContent is more efficient than .innerText() and .innerHTML()
 
   // sort
   const movs = sort ? [...movements].sort((a, b) => a - b) : movements; // SOLVE ascending because, it will be reversed by the end, so basically we were inserting all the elements at the start of the container, that's why
@@ -311,7 +311,7 @@ console.log(arr.slice()); // just a matter of personal preferences, the only tim
 console.log([...arr]); // analogy
 
 // SPLICE method, fundamental difference is that it does actually change the original array, so it mutates that array;
-// console.log(arr.splice(2)); // starting from the second index until the end extract elements from the original array, it returns an array with deleted elements, so it deletes elements from the original array
+// console.log(arr.splice(2)); // starting from the second index until the end extract elements from the original array, it returns an array with DELETED elements, so it deletes elements from the original array
 arr.splice(-1); // last element from an original array will be deleted, and it returns array with only one value, and still would modified original array
 console.log(arr);
 console.log(arr.splice(1, 2)); // second argument is deleteCount, first is starting index, if no elements are removed, an empty array is returned
@@ -364,6 +364,7 @@ for (const [i, move] of movements.entries()) {
     console.log(`Movement ${i + 1}: You withdrew ${Math.abs(move)}`);
   }
 }
+// also there are values() and keys() methods
 
 console.log('----------- FOREACH ------------');
 
@@ -496,7 +497,8 @@ console.log(movementsDesc);
 // Number.isFinite() - false => NaN, +Infinity, -Infinity, null, undefined, string('0123'), so it checks if a certain value is a number
 
 // https://stackoverflow.com/questions/19839952/all-falsey-values-in-javascript
-// falsey values => String, Number, Boolean, Null, Undefined, BigInt, Symbol, Object
+// falsey values => false, 0, 0n, ``, null, undefined, NaN, document.all(undefined)
+// all types in JavaScript: String, Number, Boolean, Null, Undefined, BigInt, Symbol, Object
 console.log(movements);
 
 // it's more practical application and that's because we can actually chain all the methods together, basically use them all one after another to build a big final result, which is completely impossible to do with the for loop, so this is a big advantage of using the methods instead of regular for loop
@@ -587,9 +589,12 @@ console.log(totalDepositsInUSD);
 
 console.log(movements);
 
-// find, findIndex, map, filter, forEach and also Array.from(arrayLike, mapping function, thisArgs) have second argument which is thisArgs to specify a certain value to the "this" keyword, unlike those, the reduce method has initialValue as a second argument, so basically without having a thisArgs to manually set the "this" keyword
+// find, findIndex, map, filter, some, every, forEach and also Array.from(arrayLike, mapping function, thisArgs) have second argument which is thisArgs to specify a certain value to the "this" keyword,
+// unlike those, the reduce method has initialValue as a second argument, so basically without having a thisArgs to manually set the "this" keyword
 
-const firstWithdrawal = movements.find(mov => mov < 0); // unlike the filter method, the find method will actually not return a new array, but it will only return the first element in the array that satisfies this condition, so basically in other words, the first element in the array for which certain operation becomes true
+const firstWithdrawal = movements.find(mov => mov < 0); // unlike the filter method, the find method will actually not return a new array,
+                                                        //but it will only return the first element in the array that satisfies this condition,
+                                                        //so basically in other words, the first element in the array for which certain operation becomes true
 
 console.log(firstWithdrawal);
 
@@ -783,6 +788,20 @@ console.log(
   ) // 1 .. 6
 );
 
+// setting "thisArgs" into Array.from()
+// thisArgs is ruined, because of arrow function that is actually pointed to window object, so use function expression instead
+const objData = {
+    sum: 0
+};
+
+Array.from({length: 10}, function(_, i) {
+    console.log(this);
+    console.log(this.sum);
+    this.sum += i + 1;
+    return i + 1;
+}, obj); 
+console.log(this.sum);
+
 // getting data from UI
 labelBalance.addEventListener('click', function () {
   // const movementsUI = Array.from(
@@ -808,8 +827,8 @@ console.log(
 );
 
 console.log(
+  // methods were separated, that's why it's not undefined
   Array.from([1, 2, 3]).map((_, __, arr) => {
-    // there were separated, that's why it's not undefined
     console.log(`intermediate: ${arr}`); // intermediate: 1,2,3
     return 0;
   })
