@@ -799,7 +799,7 @@ Array.from({length: 10}, function(_, i) {
     console.log(this.sum);
     this.sum += i + 1;
     return i + 1;
-}, obj); 
+}, objData); 
 console.log(this.sum);
 
 // getting data from UI
