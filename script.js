@@ -403,7 +403,7 @@ class Counter {
       this.sum += entry;
       ++this.count;
     }, this); // SOLVE it works as expected
-    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we must specified exactly "this" VALUE(which is the object, the outer scope of function expression that is the method that is called by object) to prevent the "this" keyword points to the undefined(in strict mode)
+    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we specified exactly "this" VALUE(which is the object, the outer scope of function expression that is the method that is called by object) to prevent the "this" keyword points to the undefined(in strict mode)
   }
 }
 
@@ -527,7 +527,6 @@ const withdrawals = movements.filter(function (mov) {
 
 console.log(withdrawals);
 
-// SOLVE it's not that important to explain second argument "thisArgs"
 */
 
 /*
@@ -702,11 +701,11 @@ console.log(movements);
 // Ascending
 // movements.sort((a, b) => {
 //   if (a > b) {
-//     // B, A (switch order)
+//     // (switch order)
 //     return 1; 
 //   }
 //   if (a < b) {
-//     // A, B (keep order)
+//     // (keep order)
 //     return -1; 
 //   }
 // });
@@ -943,7 +942,6 @@ const sums = accounts
   .flatMap(({ movements }) => movements)
   .reduce(
     (acc, cur) => {
-      // cur > 0 ? (acc.deposits += cur) : (acc.withdrawals += cur);
       acc[cur > 0 ? 'deposits' : 'withdrawals'] += cur;
       return acc;
     },
