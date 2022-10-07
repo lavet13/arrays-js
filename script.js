@@ -335,7 +335,7 @@ console.log(letters.join(' - ')); // new string
 
 /*
 ////////////////////////////////////////////////////////
-// The new at Method
+// at Method
 
 const arr = [23, 11, 64];
 console.log(arr[0]);
@@ -413,7 +413,7 @@ console.log(`sum: ${obj.sum}`);
 console.log(`count: ${obj.count}`);
 console.log(objTest2);
 
-// private properties
+// private properties as a convention, not really a feature of JavaScript
 // console.log(obj._sum);
 // console.log(obj._count);
 */
@@ -783,7 +783,7 @@ console.log(f(1, 2, 3, 4, 5)); // [[Prototype]]: Array(0)
 console.log(
   Array.from(
     { length: 100 },
-    (element, i, _) => Math.trunc(Math.random() * 6) + 1 // third argument is undefined, because processed array wasn't provided by mapping function(callback function)
+    (element, i, _) => Math.trunc(Math.random() * 6) + 1 // third argument is undefined, because processed array wasn't provided by mapping function(callback function), thisArgs doesn't work with arrow function
   ) // 1 .. 6
 );
 
