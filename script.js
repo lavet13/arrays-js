@@ -307,12 +307,12 @@ console.log(arr.slice(2, 4)); // 4 - 2 = 2, so length of the new resulting array
 console.log(arr.slice(-2));
 console.log(arr.slice(-1)); // returns a new array with the last(one) element
 console.log(arr.slice(1, -2)); // from the first index to the second last index (not included)
-console.log(arr.slice()); // just a matter of personal preferences, the only time you really need to use slice method is when you want to chain multiple methods together
+console.log(arr.slice()); // just a matter of personal preferences
 console.log([...arr]); // analogy
 
 // SPLICE method, fundamental difference is that it does actually change the original array, so it mutates that array;
 // console.log(arr.splice(2)); // starting from the second index until the end extract elements from the original array, it returns an array with DELETED elements, so it deletes elements from the original array
-arr.splice(-1); // last element from an original array will be deleted, and it returns array with only one value, and still would modified original array
+arr.splice(-1); // last element from an original array will be deleted, and it returns array with only one deleted value, and still would modified original array
 console.log(arr);
 console.log(arr.splice(1, 2)); // second argument is deleteCount, first is starting index, if no elements are removed, an empty array is returned
 console.log(arr.splice(0)); // then the entire original array will be cleaned, and splice method will return all the deleted elements from the original one
@@ -403,7 +403,7 @@ class Counter {
       this.sum += entry;
       ++this.count;
     }, this); // SOLVE it works as expected
-    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we specified exactly "this" VALUE(which is the object, the outer scope of function expression that is the method that is called by object) to prevent the "this" keyword points to the undefined(in strict mode)
+    // thisArgs(second argument) is actually something similar that was in bind, call and apply methods where we're manually set the "this" keyword, and we specified exactly "this" VALUE(which is the object, the outer scope of function expression that is the method that is called by object)
   }
 }
 
@@ -497,7 +497,7 @@ console.log(movementsDesc);
 // Number.isFinite() - false => NaN, +Infinity, -Infinity, null, undefined, string('0123'), so it checks if a certain value is a number
 
 // https://stackoverflow.com/questions/19839952/all-falsey-values-in-javascript
-// falsey values => false, 0, 0n, ``, null, undefined, NaN, document.all(undefined)
+// falsey values => false, 0, 0n, ``, null, undefined, NaN, document.all returns undefined
 // all types in JavaScript: String, Number, Boolean, Null, Undefined, BigInt, Symbol, Object
 console.log(movements);
 
@@ -720,6 +720,7 @@ movements.sort((a, b) => {
     // A, B (keep order)
     return -1; 
   }
+
   if (a < b) {
     // B, A (switch order)
     return 1; 
@@ -816,17 +817,7 @@ labelBalance.addEventListener('click', function () {
   console.log(movementsUI);
 });
 
-// subtle difference
 console.log(
-  Array.from([1, 2, 3], (_, __, arr) => {
-    // there is no arr in there, just an undefined
-    console.log(`intermediate: ${arr}`); // intermediate: undefined
-    return 0;
-  })
-);
-
-console.log(
-  // methods were separated, that's why it's not undefined
   Array.from([1, 2, 3]).map((_, __, arr) => {
     console.log(`intermediate: ${arr}`); // intermediate: 1,2,3
     return 0;
